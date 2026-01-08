@@ -31,11 +31,27 @@ import {
   Ear,
   Zap,
   Anchor,
-  ShieldCheck
+  ShieldCheck,
+  Plus,
+  Trash2,
+  Lock,
+  Utensils,
+  Search,
+  Map,
+  BarChart3
 } from 'lucide-react';
 
 // --- Constants ---
 const WHATSAPP_LINK = "https://wa.me/5547992029757?text=Olá!%20Quero%20falar%20com%20a%20Ellevation%20sobre%20marketing%20e%20eventos.";
+
+// --- Types ---
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  image: string;
+}
 
 // --- Components ---
 
@@ -51,7 +67,7 @@ const SectionBadge = ({ children, light = false }: { children: React.ReactNode, 
   </div>
 );
 
-const Navbar = () => {
+const Navbar = ({ onOpenAdmin }: { onOpenAdmin: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -61,19 +77,12 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [isOpen]);
-
   const menuItems = [
     { name: 'Início', href: '#home' },
     { name: 'Sobre', href: '#sobre' },
     { name: 'Marketing', href: '#marketing' },
     { name: 'Eventos', href: '#eventos' },
+    { name: 'Blog', href: '#blog' },
     { name: 'Cases', href: '#cases' },
     { name: 'Contato', href: '#contato' },
   ];
@@ -83,7 +92,7 @@ const Navbar = () => {
       <nav className={`fixed w-full z-[100] transition-all duration-300 ${scrolled || isOpen ? 'bg-white shadow-xl py-3' : 'bg-transparent py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
-            <div className="flex-shrink-0 flex items-center mr-16">
+            <div className="flex-shrink-0 flex items-center mr-8 lg:mr-16">
               <a 
                 href="#home" 
                 onClick={(e) => { 
@@ -97,7 +106,7 @@ const Navbar = () => {
               </a>
             </div>
             
-            <div className="hidden md:flex items-center space-x-2">
+            <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
               {menuItems.map((item) => (
                 <a 
                   key={item.name} 
@@ -106,7 +115,7 @@ const Navbar = () => {
                     e.preventDefault();
                     document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className={`px-4 py-2 rounded-full text-xs uppercase tracking-widest font-black transition-all duration-300 transform hover:-translate-y-1 hover:bg-purple-600/10 ${scrolled ? 'text-slate-700' : 'text-white'}`}
+                  className={`px-3 lg:px-4 py-2 rounded-full text-[10px] lg:text-xs uppercase tracking-widest font-black transition-all duration-300 transform hover:-translate-y-1 hover:bg-purple-600/10 ${scrolled ? 'text-slate-700' : 'text-white'}`}
                 >
                   {item.name}
                 </a>
@@ -116,7 +125,7 @@ const Navbar = () => {
                   href={WHATSAPP_LINK} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="bg-yellow-400 text-slate-900 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider hover:bg-yellow-500 transition-all shadow-lg hover:shadow-yellow-200 transform hover:-translate-y-1 active:scale-95"
+                  className="bg-yellow-400 text-slate-900 px-5 lg:px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider hover:bg-yellow-500 transition-all shadow-lg hover:shadow-yellow-200 transform hover:-translate-y-1 active:scale-95"
                 >
                   Falar agora
                 </a>
@@ -135,9 +144,8 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
       <div className={`md:hidden fixed inset-0 z-[90] bg-white transition-all duration-500 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
-        <div className="flex flex-col h-full pt-28 pb-12 px-6 overflow-y-auto space-y-4">
+        <div className="flex flex-col h-full pt-28 pb-12 px-6 overflow-y-auto space-y-3">
           {menuItems.map((item, index) => (
             <a 
               key={item.name} 
@@ -147,7 +155,7 @@ const Navbar = () => {
                 setIsOpen(false);
                 document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className={`shiny-effect block w-full text-center bg-purple-50 text-purple-700 py-5 rounded-2xl font-black text-xl border border-purple-100 shadow-sm transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+              className={`shiny-effect block w-full text-center bg-purple-50 text-purple-700 py-4 rounded-2xl font-black text-lg border border-purple-100 shadow-sm transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
               style={{ transitionDelay: `${index * 70}ms` }}
             >
               {item.name}
@@ -164,6 +172,12 @@ const Navbar = () => {
             >
               FALAR NO WHATSAPP
             </a>
+            <button 
+              onClick={() => { setIsOpen(false); onOpenAdmin(); }}
+              className="mt-4 w-full flex items-center justify-center text-slate-400 text-xs font-bold uppercase tracking-widest gap-2 opacity-50 hover:opacity-100"
+            >
+              <Lock size={12} /> Área Restrita
+            </button>
           </div>
         </div>
       </div>
@@ -215,19 +229,21 @@ const Hero = () => (
 
 const Clients = () => {
   const brands = [
-    { name: "Fisker", icon: <Car size={24} /> },
-    { name: "Ortobom", icon: <Bed size={24} /> },
-    { name: "Educação Adventista", icon: <GraduationCap size={24} /> },
-    { name: "Mundo dos Fios", icon: <Scissors size={24} /> },
-    { name: "Elton Soares", icon: <User size={24} /> },
-    { name: "Agropecuária São Roque", icon: <Leaf size={24} /> },
-    { name: "RR Climatização", icon: <Wind size={24} /> },
-    { name: "Pede Pizza Express", icon: <Pizza size={24} /> },
-    { name: "Cuca & Prosa", icon: <Coffee size={24} /> },
-    { name: "Ametista Ótica", icon: <Glasses size={24} /> },
-    { name: "Audio Klinik", icon: <Ear size={24} /> },
-    { name: "RG Omega", icon: <Zap size={24} /> },
-    { name: "CN America", icon: <Anchor size={24} /> },
+    { name: "ADHONEP", icon: <Globe size={24} />, link: "https://www.adhonep.com.br" },
+    { name: "Hemmer", icon: <Utensils size={24} />, link: "https://www.kraftheinz.com/pt-BR/hemmer" },
+    { name: "Nestlé", icon: <Coffee size={24} />, link: "https://www.nestle.com.br" },
+    { name: "Ortobom", icon: <Bed size={24} />, link: "https://www.ortobom.com.br" },
+    { name: "Educação Adventista", icon: <GraduationCap size={24} />, link: "https://blumenau.educacaoadventista.org.br" },
+    { name: "Mundo dos Fios", icon: <Scissors size={24} />, link: "https://www.mundodosfios.com.br" },
+    { name: "Elton Soares", icon: <User size={24} />, link: "#" },
+    { name: "RR Climatização", icon: <Wind size={24} />, link: "#" },
+    { name: "Pede Pizza Express", icon: <Pizza size={24} />, link: "#" },
+    { name: "Cuca & Prosa", icon: <Coffee size={24} />, link: "#" },
+    { name: "Ametista Ótica", icon: <Glasses size={24} />, link: "#" },
+    { name: "Audio Klinik", icon: <Ear size={24} />, link: "#" },
+    { name: "RG Resistências Elétricas", icon: <Zap size={24} />, link: "https://www.rgresistencias.com.br" },
+    { name: "Clube Náutico América", icon: <Anchor size={24} />, link: "https://www.clubenauticoamerica.com.br" },
+    { name: "Agropecuária São Roque", icon: <Leaf size={24} />, link: "#" },
   ];
 
   return (
@@ -239,8 +255,11 @@ const Clients = () => {
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {brands.map((brand, i) => (
-            <div 
+            <a 
               key={i} 
+              href={brand.link}
+              target={brand.link !== "#" ? "_blank" : undefined}
+              rel={brand.link !== "#" ? "noopener noreferrer" : undefined}
               className="group flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:border-purple-200 hover:-translate-y-2 grayscale hover:grayscale-0"
             >
               <div className="text-slate-300 group-hover:text-purple-600 transition-colors mb-4">
@@ -249,6 +268,42 @@ const Clients = () => {
               <div className="text-slate-400 font-black text-[10px] md:text-xs text-center uppercase tracking-widest group-hover:text-purple-700 transition-colors">
                 {brand.name}
               </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const MarketingServices = () => {
+  const services = [
+    { icon: <Search size={32} />, title: "Google Empresas & SEO Local", desc: "Configuração profissional de Google Meu Negócio para garantir que sua empresa apareça no topo do Google Maps e buscas locais." },
+    { icon: <TrendingUp size={32} />, title: "Marketing Estratégico", desc: "Planejamento 360º focado em metas de faturamento, canais de aquisição e posicionamento de mercado." },
+    { icon: <Megaphone size={32} />, title: "Tráfego Pago (Ads)", desc: "Gestão profissional de Google e Meta Ads para atrair clientes qualificados no exato momento da compra." },
+    { icon: <Layout size={32} />, title: "Performance Web", desc: "Desenvolvimento de Landing Pages de alta conversão, otimizadas para mobile e velocidade máxima." },
+    { icon: <Smartphone size={32} />, title: "Social Media Ativo", desc: "Gestão de conteúdo estratégico focado em autoridade, desejo de marca e relacionamento com o público." },
+    { icon: <BarChart3 size={32} />, title: "Dashboard & Dash", desc: "Relatórios de performance transparentes para você acompanhar em tempo real o retorno sobre seu investimento." },
+  ];
+
+  return (
+    <section id="marketing" className="py-24 bg-slate-950 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <SectionBadge light>Estratégia & Performance</SectionBadge>
+          <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">Marketing de Alta Performance</h2>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto font-medium">Elevamos o faturamento da sua empresa com inteligência de dados e visibilidade absoluta no Google.</p>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {services.map((service, idx) => (
+            <div key={idx} className="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 hover:border-purple-500/50 hover:bg-slate-800/50 transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-purple-600/20 transition-all"></div>
+              <div className="w-16 h-16 bg-purple-600/20 text-purple-400 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500 relative z-10">
+                {service.icon}
+              </div>
+              <h3 className="text-xl font-black mb-3 tracking-tight relative z-10">{service.title}</h3>
+              <p className="text-slate-400 leading-relaxed text-sm relative z-10">{service.desc}</p>
             </div>
           ))}
         </div>
@@ -256,6 +311,210 @@ const Clients = () => {
     </section>
   );
 };
+
+const BlogSection = ({ posts }: { posts: BlogPost[] }) => {
+  return (
+    <section id="blog" className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <SectionBadge>Conteúdo Estratégico</SectionBadge>
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">Insights da Ellevation</h2>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium">Fique por dentro das tendências de marketing e bastidores de eventos.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <article key={post.id} className="group bg-slate-50 rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+              <div className="h-56 overflow-hidden">
+                <img 
+                  src={post.image} 
+                  alt={post.title} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+              </div>
+              <div className="p-8">
+                <div className="flex items-center text-purple-600 text-[10px] font-black uppercase tracking-widest mb-4">
+                  <Calendar size={12} className="mr-2" /> {post.date}
+                </div>
+                <h3 className="text-xl font-black text-slate-900 mb-4 tracking-tight leading-snug group-hover:text-purple-700 transition-colors">
+                  {post.title}
+                </h3>
+                <p className="text-slate-600 text-sm leading-relaxed mb-6 line-clamp-2">
+                  {post.excerpt}
+                </p>
+                <a href="#" className="inline-flex items-center text-purple-700 font-black text-xs uppercase tracking-widest hover:gap-2 transition-all">
+                  Ler matéria <ChevronRight size={14} className="ml-1" />
+                </a>
+              </div>
+            </article>
+          ))}
+          {posts.length === 0 && (
+            <div className="col-span-full py-12 text-center text-slate-400 italic">
+              Nenhum post publicado ainda.
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Cases = () => {
+  const cases = [
+    { 
+      title: "Visibilidade Google Local: +400% de Engajamento", 
+      cat: "Google & SEO", 
+      impact: "Destaque orgânico no topo da busca local", 
+      img: "https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&q=80&w=600" 
+    },
+    { 
+      title: "Performance Ads: ROI de 12x em Lançamento", 
+      cat: "Tráfego Pago", 
+      impact: "Redução de 60% no custo por lead", 
+      img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600" 
+    },
+    { 
+      title: "Convenção Corporativa: Gestão 360º", 
+      cat: "Eventos", 
+      impact: "500 convidados / Staff impecável", 
+      img: "https://images.unsplash.com/photo-1540575861501-7ad0582371f4?auto=format&fit=crop&q=80&w=600" 
+    },
+  ];
+
+  return (
+    <section id="cases" className="py-24 bg-slate-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <SectionBadge light>Nosso Impacto</SectionBadge>
+          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Portfólio de Resultados</h2>
+          <p className="text-slate-400 max-w-sm mx-auto font-medium italic">Casos reais onde a Ellevation elevou o patamar competitivo.</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {cases.map((project, idx) => (
+            <div key={idx} className="group relative overflow-hidden rounded-[2.5rem] shadow-xl bg-slate-800 h-[450px] border border-white/5 hover:border-purple-500/30 transition-colors">
+              <img 
+                src={project.img} 
+                alt={project.title} 
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-60 group-hover:opacity-80"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-8 w-full">
+                <span className="bg-yellow-400 text-slate-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 inline-block">{project.cat}</span>
+                <h3 className="text-2xl font-black text-white mb-2 leading-tight">{project.title}</h3>
+                <p className="text-purple-400 font-bold text-sm flex items-center gap-2">
+                  <CheckCircle2 size={16} /> {project.impact}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const AdminPanel = ({ isOpen, onClose, posts, setPosts }: { isOpen: boolean, onClose: () => void, posts: BlogPost[], setPosts: React.Dispatch<React.SetStateAction<BlogPost[]>> }) => {
+  const [newPost, setNewPost] = useState({ title: '', excerpt: '', image: '' });
+
+  if (!isOpen) return null;
+
+  const handleAddPost = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPost.title || !newPost.excerpt) return;
+    
+    const post: BlogPost = {
+      id: Date.now().toString(),
+      title: newPost.title,
+      excerpt: newPost.excerpt,
+      date: new Date().toLocaleDateString('pt-BR'),
+      image: newPost.image || 'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?auto=format&fit=crop&q=80&w=800'
+    };
+    
+    const updatedPosts = [post, ...posts];
+    setPosts(updatedPosts);
+    localStorage.setItem('ellevation_posts', JSON.stringify(updatedPosts));
+    setNewPost({ title: '', excerpt: '', image: '' });
+  };
+
+  const removePost = (id: string) => {
+    const updatedPosts = posts.filter(p => p.id !== id);
+    setPosts(updatedPosts);
+    localStorage.setItem('ellevation_posts', JSON.stringify(updatedPosts));
+  };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md">
+      <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col">
+        <div className="p-8 border-b flex justify-between items-center bg-purple-50">
+          <h2 className="text-2xl font-black text-purple-900 uppercase tracking-tighter flex items-center gap-3">
+            <Lock className="text-purple-600" /> Gerenciar Blog
+          </h2>
+          <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors"><X /></button>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* New Post Form */}
+          <div className="space-y-6">
+            <h3 className="font-black text-sm uppercase tracking-widest text-slate-500 border-b pb-2">Novo Post</h3>
+            <form onSubmit={handleAddPost} className="space-y-4">
+              <input 
+                type="text" 
+                placeholder="Título do Post" 
+                className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:ring-2 focus:ring-purple-600 outline-none font-bold"
+                value={newPost.title}
+                onChange={e => setNewPost({...newPost, title: e.target.value})}
+              />
+              <textarea 
+                placeholder="Resumo do conteúdo..." 
+                className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:ring-2 focus:ring-purple-600 outline-none font-medium h-32"
+                value={newPost.excerpt}
+                onChange={e => setNewPost({...newPost, excerpt: e.target.value})}
+              />
+              <input 
+                type="text" 
+                placeholder="URL da Imagem (Unsplash, etc)" 
+                className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:ring-2 focus:ring-purple-600 outline-none text-xs font-mono"
+                value={newPost.image}
+                onChange={e => setNewPost({...newPost, image: e.target.value})}
+              />
+              <button className="w-full bg-purple-700 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-purple-800 transition-all">
+                <Plus size={20} /> Publicar no Blog
+              </button>
+            </form>
+          </div>
+
+          {/* Posts List */}
+          <div className="space-y-6">
+            <h3 className="font-black text-sm uppercase tracking-widest text-slate-500 border-b pb-2">Posts Atuais ({posts.length})</h3>
+            <div className="space-y-3">
+              {posts.map(post => (
+                <div key={post.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group">
+                  <div className="flex items-center gap-4">
+                    <img src={post.image} className="w-12 h-12 rounded-xl object-cover" />
+                    <div>
+                      <h4 className="font-black text-slate-900 text-sm line-clamp-1">{post.title}</h4>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{post.date}</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => removePost(post.id)}
+                    className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Services and Other Sections (Reused) ---
 
 const About = () => (
   <section id="sobre" className="py-24 bg-white overflow-hidden">
@@ -302,41 +561,6 @@ const About = () => (
     </div>
   </section>
 );
-
-const MarketingServices = () => {
-  const services = [
-    { icon: <TrendingUp size={32} />, title: "Marketing Estratégico", desc: "Planejamento completo focado em metas de negócio e posicionamento de mercado." },
-    { icon: <Smartphone size={32} />, title: "Social Media", desc: "Conteúdo relevante e gestão de comunidade para aumentar o engajamento e desejo pela marca." },
-    { icon: <Megaphone size={32} />, title: "Tráfego Pago", desc: "Campanhas otimizadas no Ads para atrair clientes prontos para comprar." },
-    { icon: <Layout size={32} />, title: "Performance Web", desc: "Landing Pages focadas em UX e alta conversão para transformar visitantes em leads." },
-    { icon: <Award size={32} />, title: "Posicionamento", desc: "Criação de identidade visual e verbal que diferencia sua empresa." },
-    { icon: <Users size={32} />, title: "Consultoria Ativa", desc: "Acompanhamento estratégico para destravar o crescimento da sua empresa." },
-  ];
-
-  return (
-    <section id="marketing" className="py-24 bg-slate-950 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <SectionBadge light>Marketing Solutions</SectionBadge>
-          <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">Impulsione seu Crescimento</h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto font-medium">Estratégias digitais agressivas e honestas para dominar seu mercado.</p>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {services.map((service, idx) => (
-            <div key={idx} className="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 hover:border-purple-500/50 hover:bg-slate-800/50 transition-all duration-300 group hover:-translate-y-2">
-              <div className="w-16 h-16 bg-purple-600/20 text-purple-400 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
-                {service.icon}
-              </div>
-              <h3 className="text-xl font-black mb-3 tracking-tight">{service.title}</h3>
-              <p className="text-slate-400 leading-relaxed text-sm">{service.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
 
 const EventServices = () => {
   const items = [
@@ -392,60 +616,6 @@ const EventServices = () => {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const Cases = () => {
-  const cases = [
-    { 
-      title: "Lançamento Digital - Tech Solutions", 
-      cat: "Marketing", 
-      impact: "+250% em conversão", 
-      img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600" 
-    },
-    { 
-      title: "Convenção Anual de Vendas", 
-      cat: "Eventos", 
-      impact: "500 convidados / 100% satisfação", 
-      img: "https://images.unsplash.com/photo-1540575861501-7ad0582371f4?auto=format&fit=crop&q=80&w=600" 
-    },
-    { 
-      title: "Rebranding Nacional - EcoFood", 
-      cat: "Branding", 
-      impact: "Novo posicionamento de mercado", 
-      img: "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=80&w=600" 
-    },
-  ];
-
-  return (
-    <section id="cases" className="py-24 bg-slate-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <SectionBadge light>Nosso Impacto</SectionBadge>
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Cases e Resultados</h2>
-          <p className="text-slate-400 max-w-sm mx-auto font-medium italic">Projetos reais entregues com foco total em ROI.</p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {cases.map((project, idx) => (
-            <div key={idx} className="group relative overflow-hidden rounded-[2.5rem] shadow-xl bg-slate-800 h-[450px]">
-              <img 
-                src={project.img} 
-                alt={project.title} 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-8 w-full">
-                <span className="bg-yellow-400 text-slate-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 inline-block">{project.cat}</span>
-                <h3 className="text-2xl font-black text-white mb-2 leading-tight">{project.title}</h3>
-                <p className="text-purple-400 font-bold text-sm">{project.impact}</p>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </section>
@@ -537,7 +707,7 @@ const Contact = () => (
   </section>
 );
 
-const Footer = () => (
+const Footer = ({ onOpenAdmin }: { onOpenAdmin: () => void }) => (
   <footer className="bg-slate-950 text-white pt-24 pb-12">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
@@ -553,25 +723,26 @@ const Footer = () => (
         </div>
         
         <div>
-          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white underline decoration-yellow-400 underline-offset-8">Marketing</h4>
+          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white underline decoration-yellow-400 underline-offset-8">Links Rápidos</h4>
           <ul className="space-y-4 text-slate-400 font-bold text-sm">
-            <li><a href="#marketing" onClick={(e) => { e.preventDefault(); document.querySelector('#marketing')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Gestão de Ads</a></li>
-            <li><a href="#marketing" onClick={(e) => { e.preventDefault(); document.querySelector('#marketing')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Social Media</a></li>
-            <li><a href="#marketing" onClick={(e) => { e.preventDefault(); document.querySelector('#marketing')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Landing Pages</a></li>
+            <li><a href="#marketing" onClick={(e) => { e.preventDefault(); document.querySelector('#marketing')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Marketing</a></li>
+            <li><a href="#eventos" onClick={(e) => { e.preventDefault(); document.querySelector('#eventos')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Eventos</a></li>
+            <li><a href="#blog" onClick={(e) => { e.preventDefault(); document.querySelector('#blog')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Blog</a></li>
+            <li><button onClick={onOpenAdmin} className="hover:text-yellow-400 transition-colors flex items-center gap-2"><Lock size={12}/> Admin</button></li>
           </ul>
         </div>
         
         <div>
-          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white underline decoration-yellow-400 underline-offset-8">Eventos</h4>
+          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white underline decoration-yellow-400 underline-offset-8">Atendimento</h4>
           <ul className="space-y-4 text-slate-400 font-bold text-sm">
-            <li><a href="#eventos" onClick={(e) => { e.preventDefault(); document.querySelector('#eventos')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Corporativos</a></li>
-            <li><a href="#eventos" onClick={(e) => { e.preventDefault(); document.querySelector('#eventos')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Staff / Promotores</a></li>
-            <li><a href="#eventos" onClick={(e) => { e.preventDefault(); document.querySelector('#eventos')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Ativações</a></li>
+            <li><a href="#contato" onClick={(e) => { e.preventDefault(); document.querySelector('#contato')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Fale Conosco</a></li>
+            <li><a href={WHATSAPP_LINK} target="_blank" className="hover:text-yellow-400 transition-colors">Suporte WhatsApp</a></li>
+            <li><a href="#sobre" onClick={(e) => { e.preventDefault(); document.querySelector('#sobre')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Nossa História</a></li>
           </ul>
         </div>
         
         <div>
-          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white underline decoration-yellow-400 underline-offset-8">Fale Conosco</h4>
+          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white underline decoration-yellow-400 underline-offset-8">Newsletter</h4>
           <p className="text-slate-400 mb-6 text-sm font-medium italic">Inscreva-se para novidades.</p>
           <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
             <input type="email" placeholder="E-mail" className="bg-transparent px-4 py-3 outline-none w-full text-sm font-medium" />
@@ -613,19 +784,56 @@ const FloatingWhatsApp = () => (
 // --- Main App ---
 
 export default function App() {
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('ellevation_posts');
+    if (saved) {
+      setPosts(JSON.parse(saved));
+    } else {
+      // Default posts if none saved
+      const defaultPosts: BlogPost[] = [
+        {
+          id: '1',
+          title: 'A Nova Era do Marketing de Experiência',
+          excerpt: 'Saiba como as marcas estão usando eventos presenciais para fortalecer o engajamento digital.',
+          date: '10/05/2024',
+          image: 'https://images.unsplash.com/photo-1540575861501-7ad0582371f4?auto=format&fit=crop&q=80&w=800'
+        },
+        {
+          id: '2',
+          title: 'Google Empresas: Sua Vitrine no Topo',
+          excerpt: 'Como a configuração profissional do seu perfil no Google pode dobrar suas chamadas e visitas locais.',
+          date: '05/05/2024',
+          image: 'https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&q=80&w=800'
+        }
+      ];
+      setPosts(defaultPosts);
+      localStorage.setItem('ellevation_posts', JSON.stringify(defaultPosts));
+    }
+  }, []);
+
   return (
     <div className="relative antialiased text-slate-900 bg-white selection:bg-purple-600 selection:text-white">
-      <Navbar />
+      <Navbar onOpenAdmin={() => setIsAdminOpen(true)} />
       <Hero />
       <Clients />
       <About />
       <MarketingServices />
       <EventServices />
+      <BlogSection posts={posts} />
       <Cases />
       <CTAFinal />
       <Contact />
-      <Footer />
+      <Footer onOpenAdmin={() => setIsAdminOpen(true)} />
       <FloatingWhatsApp />
+      <AdminPanel 
+        isOpen={isAdminOpen} 
+        onClose={() => setIsAdminOpen(false)} 
+        posts={posts} 
+        setPosts={setPosts} 
+      />
     </div>
   );
 }
