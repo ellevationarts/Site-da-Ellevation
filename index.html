@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-pt-20">
+<html lang="pt-BR" class="scroll-pt-20 scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,12 +25,32 @@
     <style>
       body {
         font-family: 'Inter', sans-serif;
-        scroll-behavior: smooth;
       }
-      .gradient-text {
-        background: linear-gradient(90deg, #2563eb, #7c3aed);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+      
+      @keyframes shine {
+        0% { transform: translateX(-200%) skewX(-30deg); }
+        100% { transform: translateX(200%) skewX(-30deg); }
+      }
+
+      .shiny-effect {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .shiny-effect::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to right,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        animation: shine 4s infinite linear;
       }
     </style>
   <script type="importmap">

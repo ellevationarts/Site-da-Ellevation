@@ -43,7 +43,7 @@ const SectionBadge = ({ children, light = false }: { children: React.ReactNode, 
   <div className={`inline-flex items-center px-4 py-1.5 rounded-full border mb-6 transition-all duration-300 ${
     light 
     ? 'bg-purple-500/10 border-purple-400/30 text-purple-300' 
-    : 'bg-purple-50 border-purple-100 text-purple-700'
+    : 'bg-purple-50 border-purple-100 text-purple-700 shadow-sm'
   }`}>
     <span className="text-[11px] md:text-xs font-black uppercase tracking-[0.2em]">
       {children}
@@ -80,39 +80,53 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`fixed w-full z-[100] transition-all duration-300 ${scrolled || isOpen ? 'bg-white shadow-lg py-3' : 'bg-transparent py-5'}`}>
+      <nav className={`fixed w-full z-[100] transition-all duration-300 ${scrolled || isOpen ? 'bg-white shadow-xl py-3' : 'bg-transparent py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <a href="#home" onClick={() => setIsOpen(false)} className={`text-2xl font-black tracking-tighter transition-colors ${scrolled || isOpen ? 'text-purple-700' : 'text-white'}`}>
+            <div className="flex-shrink-0 flex items-center mr-16">
+              <a 
+                href="#home" 
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  setIsOpen(false); 
+                  document.querySelector('#home')?.scrollIntoView({ behavior: 'smooth' }); 
+                }} 
+                className={`text-2xl font-black tracking-tighter transition-colors ${scrolled || isOpen ? 'text-purple-700' : 'text-white'}`}
+              >
                 ELLEVATION
               </a>
             </div>
             
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-2">
               {menuItems.map((item) => (
                 <a 
                   key={item.name} 
-                  href={item.href} 
-                  className={`text-xs uppercase tracking-widest font-bold transition-all hover:text-purple-600 ${scrolled ? 'text-slate-700' : 'text-white/80 hover:text-white'}`}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className={`px-4 py-2 rounded-full text-xs uppercase tracking-widest font-black transition-all duration-300 transform hover:-translate-y-1 hover:bg-purple-600/10 ${scrolled ? 'text-slate-700' : 'text-white'}`}
                 >
                   {item.name}
                 </a>
               ))}
-              <a 
-                href={WHATSAPP_LINK} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-yellow-400 text-slate-900 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-yellow-500 transition-all shadow-lg hover:shadow-yellow-200"
-              >
-                Falar agora
-              </a>
+              <div className="pl-4">
+                <a 
+                  href={WHATSAPP_LINK} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-yellow-400 text-slate-900 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider hover:bg-yellow-500 transition-all shadow-lg hover:shadow-yellow-200 transform hover:-translate-y-1 active:scale-95"
+                >
+                  Falar agora
+                </a>
+              </div>
             </div>
 
             <div className="md:hidden">
               <button 
                 onClick={() => setIsOpen(!isOpen)} 
-                className={`p-2 transition-colors rounded-lg ${scrolled || isOpen ? 'text-purple-700 bg-purple-50' : 'text-white bg-white/10'}`}
+                className={`p-2 transition-all duration-300 rounded-xl ${scrolled || isOpen ? 'text-purple-700 bg-purple-50' : 'text-white bg-white/10'}`}
               >
                 {isOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -121,27 +135,32 @@ const Navbar = () => {
         </div>
       </nav>
 
-      <div className={`md:hidden fixed inset-0 z-[90] bg-white transition-all duration-500 ease-in-out transform ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
-        <div className="flex flex-col h-full pt-24 pb-12 px-8 overflow-y-auto">
-          <div className="space-y-4">
-            {menuItems.map((item, index) => (
-              <a 
-                key={item.name} 
-                href={item.href} 
-                onClick={() => setIsOpen(false)}
-                className={`block text-3xl font-black text-slate-900 transition-all duration-300 transform ${isOpen ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'}`}
-                style={{ transitionDelay: `${index * 50}ms` }}
-              >
-                <span className="text-purple-600 mr-4 text-lg">0{index + 1}.</span>
-                {item.name}
-              </a>
-            ))}
-          </div>
+      {/* Mobile Menu Overlay */}
+      <div className={`md:hidden fixed inset-0 z-[90] bg-white transition-all duration-500 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
+        <div className="flex flex-col h-full pt-28 pb-12 px-6 overflow-y-auto space-y-4">
+          {menuItems.map((item, index) => (
+            <a 
+              key={item.name} 
+              href={item.href} 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsOpen(false);
+                document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className={`shiny-effect block w-full text-center bg-purple-50 text-purple-700 py-5 rounded-2xl font-black text-xl border border-purple-100 shadow-sm transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+              style={{ transitionDelay: `${index * 70}ms` }}
+            >
+              {item.name}
+            </a>
+          ))}
+          
           <div className="mt-auto pt-8">
             <a 
               href={WHATSAPP_LINK}
-              className={`flex items-center justify-center w-full bg-yellow-400 text-slate-900 py-5 rounded-2xl font-black text-lg shadow-xl transition-all transform ${isOpen ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
-              style={{ transitionDelay: '400ms' }}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex items-center justify-center w-full bg-yellow-400 text-slate-900 py-6 rounded-2xl font-black text-lg shadow-xl transition-all transform duration-500 ${isOpen ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
+              style={{ transitionDelay: '500ms' }}
             >
               FALAR NO WHATSAPP
             </a>
@@ -168,21 +187,22 @@ const Hero = () => (
         <h1 className="text-3xl md:text-5xl lg:text-7xl font-black leading-[1.1] mb-6 animate-fade-in tracking-tighter">
           Elevamos sua marca <span className="text-yellow-400">sem promessas vazias</span> e com resultados.
         </h1>
-        <p className="text-base md:text-lg lg:text-xl text-slate-300 mb-10 leading-relaxed font-medium max-w-2xl">
-          Conectamos estratégia roxa, criatividade amarela e execução azul marinho para transformar o seu marketing com excelência.
+        <p className="text-lg md:text-xl lg:text-3xl text-slate-300 mb-10 leading-relaxed font-medium max-w-2xl">
+          Conectamos <span className="text-yellow-400 font-black">estratégia</span>, <span className="text-yellow-400 font-black">criatividade</span> e execução para transformar o seu marketing com <span className="text-yellow-400 font-black">excelência</span>.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <a 
             href={WHATSAPP_LINK}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-slate-900 px-10 py-4 rounded-full font-black text-base uppercase tracking-wider transition-all transform hover:scale-105 shadow-2xl"
+            className="flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-slate-900 px-10 py-4 rounded-full font-black text-base uppercase tracking-wider transition-all transform hover:scale-105 shadow-2xl shadow-yellow-400/20"
           >
             Falar no WhatsApp
             <ChevronRight className="ml-2" size={20} />
           </a>
           <a 
             href="#marketing"
+            onClick={(e) => { e.preventDefault(); document.querySelector('#marketing')?.scrollIntoView({ behavior: 'smooth' }); }}
             className="flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm px-10 py-4 rounded-full font-bold text-base uppercase tracking-wider transition-all"
           >
             Nossas Soluções
@@ -211,7 +231,7 @@ const Clients = () => {
   ];
 
   return (
-    <section className="py-24 bg-slate-50">
+    <section id="clientes" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <SectionBadge>Confiança e Credibilidade</SectionBadge>
         <h3 className="text-slate-900 font-black text-2xl md:text-4xl mb-16 tracking-tight max-w-2xl mx-auto">
@@ -246,7 +266,7 @@ const About = () => (
           <img 
             src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=800" 
             alt="Trajetória Ellevation" 
-            className="rounded-3xl shadow-2xl relative z-10 w-full object-cover aspect-video lg:aspect-square"
+            className="rounded-3xl shadow-2xl relative z-10 w-full object-cover aspect-video lg:aspect-square transform transition-all duration-700 hover:scale-[1.01]"
             loading="lazy"
           />
         </div>
@@ -271,8 +291,8 @@ const About = () => (
               "Gestão digital estratégica ativa",
               "Foco absoluto em conversão real"
             ].map((item, idx) => (
-              <li key={idx} className="flex items-center text-slate-800 font-bold text-sm uppercase tracking-tight">
-                <CheckCircle2 className="text-yellow-500 mr-3 shrink-0" size={24} />
+              <li key={idx} className="flex items-center text-slate-800 font-bold text-sm uppercase tracking-tight group cursor-default">
+                <CheckCircle2 className="text-yellow-500 mr-3 shrink-0 transform group-hover:scale-110 transition-transform" size={24} />
                 {item}
               </li>
             ))}
@@ -286,7 +306,7 @@ const About = () => (
 const MarketingServices = () => {
   const services = [
     { icon: <TrendingUp size={32} />, title: "Marketing Estratégico", desc: "Planejamento completo focado em metas de negócio e posicionamento de mercado." },
-    { icon: <Smartphone size={32} />, title: "Social Media", desc: "Conteúdo relevante e gestão de comunidade para aumentar o desejo pela marca." },
+    { icon: <Smartphone size={32} />, title: "Social Media", desc: "Conteúdo relevante e gestão de comunidade para aumentar o engajamento e desejo pela marca." },
     { icon: <Megaphone size={32} />, title: "Tráfego Pago", desc: "Campanhas otimizadas no Ads para atrair clientes prontos para comprar." },
     { icon: <Layout size={32} />, title: "Performance Web", desc: "Landing Pages focadas em UX e alta conversão para transformar visitantes em leads." },
     { icon: <Award size={32} />, title: "Posicionamento", desc: "Criação de identidade visual e verbal que diferencia sua empresa." },
@@ -304,7 +324,7 @@ const MarketingServices = () => {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {services.map((service, idx) => (
-            <div key={idx} className="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 hover:border-purple-500/50 hover:bg-slate-800/50 transition-all duration-300 group">
+            <div key={idx} className="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 hover:border-purple-500/50 hover:bg-slate-800/50 transition-all duration-300 group hover:-translate-y-2">
               <div className="w-16 h-16 bg-purple-600/20 text-purple-400 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
                 {service.icon}
               </div>
@@ -336,7 +356,7 @@ const EventServices = () => {
             <SectionBadge>Live Experiences</SectionBadge>
             <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 leading-tight tracking-tight">Excelência em cada <span className="text-purple-600">detalhe</span> do seu evento.</h2>
             
-            <div className="inline-flex items-center bg-yellow-400 text-slate-900 px-5 py-4 rounded-3xl mb-10 shadow-xl">
+            <div className="inline-flex items-center bg-yellow-400 text-slate-900 px-5 py-4 rounded-3xl mb-10 shadow-xl transform hover:scale-105 transition-transform cursor-default">
                <ShieldCheck className="text-slate-900 mr-3" size={32} />
                <div className="text-left">
                   <div className="text-2xl font-black">19 ANOS</div>
@@ -351,7 +371,7 @@ const EventServices = () => {
               href={WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center text-purple-600 font-bold uppercase tracking-widest text-sm hover:text-purple-800 transition-colors py-3 border-b-2 border-purple-100 hover:border-purple-600"
+              className="inline-flex items-center text-purple-600 font-black uppercase tracking-widest text-sm hover:text-purple-800 transition-all py-3 border-b-2 border-purple-100 hover:border-purple-600 transform hover:translate-x-1"
             >
               Consultar disponibilidade <ChevronRight className="ml-2" size={18} />
             </a>
@@ -359,7 +379,7 @@ const EventServices = () => {
           
           <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             {items.map((item, idx) => (
-              <div key={idx} className="bg-slate-50 border border-slate-100 p-6 rounded-[2rem] hover:bg-white hover:shadow-2xl transition-all group">
+              <div key={idx} className="bg-slate-50 border border-slate-100 p-6 rounded-[2rem] hover:bg-white hover:shadow-2xl transition-all group hover:-translate-y-1">
                 <div className="flex items-start">
                   <div className="mt-1 mr-4">
                     <Calendar className="text-purple-600 group-hover:scale-110 transition-transform" size={24} />
@@ -415,7 +435,7 @@ const Cases = () => {
               <img 
                 src={project.img} 
                 alt={project.title} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 opacity-80"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-80"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
@@ -443,7 +463,7 @@ const CTAFinal = () => (
         href={WHATSAPP_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center justify-center bg-yellow-400 text-slate-900 px-12 py-5 rounded-full font-black text-lg uppercase tracking-widest shadow-2xl hover:bg-white transition-all transform hover:scale-105"
+        className="inline-flex items-center justify-center bg-yellow-400 text-slate-900 px-12 py-5 rounded-full font-black text-lg uppercase tracking-widest shadow-2xl hover:bg-white transition-all transform hover:scale-105 active:scale-95 shadow-yellow-400/20"
       >
         <MessageSquare className="mr-3" size={24} /> Conversar Agora
       </a>
@@ -465,20 +485,20 @@ const Contact = () => (
           </p>
           
           <div className="space-y-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mr-4">
+            <div className="flex items-center group cursor-default">
+              <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mr-4 transform group-hover:rotate-12 transition-transform">
                 <MapPin size={24} />
               </div>
               <span className="text-slate-700 font-bold">Santa Catarina, Brasil</span>
             </div>
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mr-4">
+            <div className="flex items-center group cursor-default">
+              <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mr-4 transform group-hover:rotate-12 transition-transform">
                 <Mail size={24} />
               </div>
               <span className="text-slate-700 font-bold">contato@ellevation.com.br</span>
             </div>
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mr-4">
+            <div className="flex items-center group cursor-default">
+              <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mr-4 transform group-hover:rotate-12 transition-transform">
                 <Phone size={24} />
               </div>
               <span className="text-slate-700 font-bold">+55 47 99202-9757</span>
@@ -486,7 +506,7 @@ const Contact = () => (
           </div>
         </div>
         
-        <div className="bg-slate-50 p-8 md:p-12 rounded-[2.5rem] border border-slate-100">
+        <div className="bg-slate-50 p-8 md:p-12 rounded-[2.5rem] border border-slate-100 shadow-inner">
           <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -507,7 +527,7 @@ const Contact = () => (
                 <option>Outros</option>
               </select>
             </div>
-            <button className="w-full bg-purple-700 text-white font-black py-5 rounded-2xl uppercase tracking-widest hover:bg-purple-800 transition-all shadow-xl shadow-purple-200">
+            <button className="w-full bg-purple-700 text-white font-black py-5 rounded-2xl uppercase tracking-widest hover:bg-purple-800 transition-all shadow-xl shadow-purple-200 active:scale-[0.98]">
               Enviar Solicitação
             </button>
           </form>
@@ -533,26 +553,26 @@ const Footer = () => (
         </div>
         
         <div>
-          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white">Marketing</h4>
+          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white underline decoration-yellow-400 underline-offset-8">Marketing</h4>
           <ul className="space-y-4 text-slate-400 font-bold text-sm">
-            <li><a href="#marketing" className="hover:text-yellow-400 transition-colors">Gestão de Ads</a></li>
-            <li><a href="#marketing" className="hover:text-yellow-400 transition-colors">Social Media</a></li>
-            <li><a href="#marketing" className="hover:text-yellow-400 transition-colors">Landing Pages</a></li>
+            <li><a href="#marketing" onClick={(e) => { e.preventDefault(); document.querySelector('#marketing')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Gestão de Ads</a></li>
+            <li><a href="#marketing" onClick={(e) => { e.preventDefault(); document.querySelector('#marketing')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Social Media</a></li>
+            <li><a href="#marketing" onClick={(e) => { e.preventDefault(); document.querySelector('#marketing')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Landing Pages</a></li>
           </ul>
         </div>
         
         <div>
-          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white">Eventos</h4>
+          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white underline decoration-yellow-400 underline-offset-8">Eventos</h4>
           <ul className="space-y-4 text-slate-400 font-bold text-sm">
-            <li><a href="#eventos" className="hover:text-yellow-400 transition-colors">Corporativos</a></li>
-            <li><a href="#eventos" className="hover:text-yellow-400 transition-colors">Staff / Promotores</a></li>
-            <li><a href="#eventos" className="hover:text-yellow-400 transition-colors">Ativações</a></li>
+            <li><a href="#eventos" onClick={(e) => { e.preventDefault(); document.querySelector('#eventos')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Corporativos</a></li>
+            <li><a href="#eventos" onClick={(e) => { e.preventDefault(); document.querySelector('#eventos')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Staff / Promotores</a></li>
+            <li><a href="#eventos" onClick={(e) => { e.preventDefault(); document.querySelector('#eventos')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-yellow-400 transition-colors">Ativações</a></li>
           </ul>
         </div>
         
         <div>
-          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white">Newsletter</h4>
-          <p className="text-slate-400 mb-6 text-sm font-medium italic">Insights exclusivos de marketing.</p>
+          <h4 className="font-black text-sm uppercase tracking-widest mb-8 text-white underline decoration-yellow-400 underline-offset-8">Fale Conosco</h4>
+          <p className="text-slate-400 mb-6 text-sm font-medium italic">Inscreva-se para novidades.</p>
           <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
             <input type="email" placeholder="E-mail" className="bg-transparent px-4 py-3 outline-none w-full text-sm font-medium" />
             <button className="bg-yellow-400 text-slate-900 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-yellow-500 transition-colors">OK</button>
@@ -571,7 +591,7 @@ const FloatingWhatsApp = () => (
     href={WHATSAPP_LINK}
     target="_blank"
     rel="noopener noreferrer"
-    className="fixed bottom-6 right-6 z-[999] bg-[#25D366] text-white p-5 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group"
+    className="fixed bottom-6 right-6 z-[999] bg-[#25D366] text-white p-5 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group active:scale-95"
     aria-label="Falar no WhatsApp"
   >
     <svg 
