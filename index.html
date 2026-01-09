@@ -32,6 +32,12 @@
         100% { transform: translateX(200%) skewX(-30deg); }
       }
 
+      @keyframes pulse-whatsapp {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+        70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+      }
+
       .shiny-effect {
         position: relative;
         overflow: hidden;
@@ -51,6 +57,10 @@
           transparent
         );
         animation: shine 4s infinite linear;
+      }
+
+      .animate-whatsapp-pulse {
+        animation: pulse-whatsapp 2s infinite;
       }
     </style>
   <script type="importmap">
