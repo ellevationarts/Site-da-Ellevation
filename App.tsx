@@ -38,7 +38,9 @@ import {
   Utensils,
   Search,
   Map,
-  BarChart3
+  BarChart3,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 // --- Constants ---
@@ -228,6 +230,8 @@ const Hero = () => (
 );
 
 const Clients = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
   const brands = [
     { name: "ADHONEP", icon: <Globe size={24} />, link: "https://www.adhonep.com.br" },
     { name: "Hemmer", icon: <Utensils size={24} />, link: "https://www.kraftheinz.com/pt-BR/hemmer" },
@@ -253,14 +257,20 @@ const Clients = () => {
         <h3 className="text-slate-900 font-black text-2xl md:text-4xl mb-16 tracking-tight max-w-2xl mx-auto">
           Marcas que fazem parte do nosso portfólio de sucesso
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        {/* Grid com 2 colunas no mobile e 4 colunas no desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 transition-all duration-500">
           {brands.map((brand, i) => (
             <a 
               key={i} 
               href={brand.link}
               target={brand.link !== "#" ? "_blank" : undefined}
               rel={brand.link !== "#" ? "noopener noreferrer" : undefined}
-              className="group flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:border-purple-200 hover:-translate-y-2 grayscale hover:grayscale-0"
+              className={`group flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:border-purple-200 hover:-translate-y-2 grayscale hover:grayscale-0 ${
+                isExpanded ? 'flex' : 
+                i < 6 ? 'flex' : 
+                i < 8 ? 'hidden md:flex' : 
+                'hidden'
+              }`}
             >
               <div className="text-slate-300 group-hover:text-purple-600 transition-colors mb-4">
                 {brand.icon}
@@ -270,6 +280,20 @@ const Clients = () => {
               </div>
             </a>
           ))}
+        </div>
+        
+        {/* Botão de expansão */}
+        <div className="mt-12">
+          <button 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="inline-flex items-center gap-2 bg-white border border-slate-200 text-purple-700 px-8 py-4 rounded-full font-black text-xs uppercase tracking-[0.15em] shadow-sm hover:shadow-md transition-all active:scale-95"
+          >
+            {isExpanded ? (
+              <>Ver Menos <ChevronUp size={16} /></>
+            ) : (
+              <>Ver Mais Marcas <ChevronDown size={16} /></>
+            )}
+          </button>
         </div>
       </div>
     </section>
